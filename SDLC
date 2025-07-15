@@ -1,0 +1,182 @@
+Overview
+Security is a shared responsibility across all teams involved in the SDLC, from inception to retirement. 
+
+The Global Security Organization (GSO) does not intend to produce an SDLC Standards Document, deferring instead to the Global Product and Technology (GPT) teams.  This document enumerates GSO requirements and recommendations to be included in a Secure Software Development Lifecycle (SDLC) standard for ADP.
+
+All software developed, acquired, or significantly customized by ADP should adhere to activities and controls described in this Secure SDLC document.  This standard should be applied to all software development activities within ADP, including but not limited to:
+
+New application development
+Major enhancements to existing applications
+Integration projects
+Third-party software acquisition and customization
+Cloud-native and on-premise applications
+Roles and Responsibilities
+There are many roles, held both by individuals or groups, within the software development lifecycle.
+
+Security Architects: responsible for the overall security posture of an application.  This includes ensuring all internal and external requirements are addressed, legal concerns.  May be designated at the product or group-of-products levels.
+Security Champions: Designated individuals within each development team who act as a liaison with the GSO Application Security team, promoting security best practices within their respective realms of influence.
+Development Teams: Responsible for implementing secure coding practices, conducting unit and integration tests, and addressing security findings.
+DevOps/Platform Teams: Manages CI/CD pipelines, SCM, and artifact repositories, ensuring secure configuration and automation.
+Product Owners/Business Analysts: Defines security requirements and prioritizes security features.
+Quality Assurance (QA) Teams: Integrates security testing into their test plans and validates security bug fixes.
+Legal & Compliance: Ensures adherence to relevant laws, regulations, and industry standards.
+GSO Application Security Team (AppSec): Develops and maintains security standards, provides training, conducts security assessments, and offers expert guidance.
+GSO Security Architecture
+Global Enterprise Technology Solutions (GETS) is responsible for the operation, security, and management of shared technology solutions.  This includes software control management servers (SCM), continuous integration servers, artifact management and distribution servers, ticketing or bug tracking software, etc.
+Secure SDLC Phases and Practices
+** Overview SDLC Process, with diagrams **
+
+Define "activities", "controls", "deliverables" 
+
+For each phase of the SDLC, we present security activities, security controls, and deliverables.
+
+Security activities are practices the development team is expected or encouraged to use.
+
+Security controls are procedural steps or technical configurations which must or should be applied to tools or services employed by development teams.  These may be applied at the source control management (SCM server, projects, repositories, branches), continuous integration (CI server, build configuration), and artifact management (Artifactory, registries/repositories, individual artifacts) levels.
+
+Deliverables are artifacts produced by each stage which may be verified or presented as evidence to show security activities or security controls have been used.  These may be collected for audit.
+
+Phase 1: Planning & Requirements
+** DEFINE **
+
+ Security Activities
+Threat Modeling: For all new applications and major features, conduct formal threat modeling sessions involving AppSec, development, and product teams. Identify potential threats, vulnerabilities, and attack vectors. Document findings and mitigation strategies.
+Security Requirements Definition: Explicitly define security requirements as part of functional and non-functional requirements. Use security user stories (e.g., "As an attacker, I cannot bypass authentication") and specify compliance needs (e.g., PCI DSS, GDPR, HIPAA).
+Data Classification: Classify data to be processed, stored, or transmitted based on its sensitivity and regulatory requirements. This informs security controls.
+Abuse Case Definition: Define how an attacker might misuse the system, similar to a negative test case.
+Third-Party Risk Assessment: For any third-party components or services, conduct a security risk assessment to evaluate their security posture and ensure compliance with company standards.
+Security Architecture Review (Initial): Consult the GSO Security Architecture team in the initial architecture design to identify potential security weaknesses early on.
+Security Controls
+None.
+Deliverables
+Threat Model documentation (e.g., STRIDE analysis, Data Flow Diagrams with trust boundaries).
+Documented security requirements and abuse cases.
+Data classification matrix.
+Risk assessment reports for third-party applications.
+Phase 2: Design & Architecture
+** DEFINE **
+
+Security Activities:
+Use secure design patterns.  Encourage the use of established secure design patterns (e.g., least privilege, defense in depth, secure defaults, secure communication).
+Security Architecture Review (Detailed): Conduct a thorough security architecture review with AppSec, focusing on authentication, authorization, session management, data protection (encryption in transit and at rest), input validation, error handling, logging, and auditing mechanisms.  If product will be hosted in the cloud, ensure services are approved and minimum cloud requirements are met.
+API Security Design: Design APIs with security in mind, including strong authentication (e.g., OAuth 2.0, OpenID Connect), authorization (e.g., RBAC, ABAC), rate limiting, and input validation.
+Secrets Management Strategy: Define a strategy for managing application secrets (API keys, database credentials) using dedicated secrets management solutions (e.g., HashiCorp Vault, AWS Secrets Manager, Azure Key Vault) rather than hardcoding or committing to SCM.
+Container Security Design: If using containers, define secure base images and container orchestration security patterns (e.g., Kubernetes network policies, Pod Security Standards).
+Security Controls
+Design approval by security architecture team should be received before beginning Development and Implementation work.
+Deliverables
+Detailed security architecture diagrams and documentation.
+Cloud and container security design specifications (if applicable).
+Initial security architecture review findings, with plans to address each.
+Secrets management plan.
+API security specifications.
+Phase 3: Development & Build
+** DEFINE **
+
+Security Activities
+Secure Coding Guidelines: Adhere to established secure coding guidelines (link to resources provided by ADP, OWASP, NIST, and others).
+Static Application Security Testing (SAST): Integrate an array of static analysis tools into the CI/CD pipeline. Where possible, configure security scans to run in the IDE and on every code commit or pull request. Prioritize and remediate critical and high-severity findings before merging.
+Dependency Scanning (SCA): Integrate Software Composition Analysis (SCA) tools into the CI/CD pipeline to identify known vulnerabilities in open-source and third-party libraries. Block builds with critical vulnerabilities or enforce remediation within a defined SLA.
+Peer Code Reviews with Security Focus: Incorporate security checks into code review checklists. Require pull requests (PRs) before merging code into protected branches.  Ensure reviewers are trained to identify common security vulnerabilities. Link to code review checklist.
+Input Validation & Output Encoding: Implement robust input validation at all entry points and proper output encoding to prevent injection attacks (e.g., XSS, SQLi).
+Secure Error Handling & Logging: Implement secure error handling that avoids revealing sensitive information (paths, stack traces, internal variables, etc). Ensure comprehensive logging of security-relevant events for auditing and incident response.
+Secrets Management Integration: Developers must integrate with approved secrets management solutions for all sensitive credentials. No secrets in code or configuration files in SCM.
+Pre-Commit Hooks (Optional but Recommended): Utilize Git pre-commit hooks to automatically run static analysis tools (e.g., linters, basic SAST checks) before code is committed.
+Developer Security Training: Provide regular and mandatory secure coding training for all development teams.
+Security Controls
+Source control repositories should enable protected branches, requiring pull requests and code reviews to merge code into build branches.
+Commits to source control servers may be signed.  Commits should be verified during pull requests and/or CI system.
+Development should employ security-focused IDE extensions and CLI tooling to scan for vulnerabilities in first- and third-party code, secrets, misconfigurations in IaC, etc.
+Unit testing should be developed to test for both functional and security compliance.
+Development teams should use only approved software from trusted sources.  This includes dependencies (maven, npm, pypi, nuget, etc), integrated development environments (IDEs) and related extensions, OS-level packages (Homebrew, Chocolatey), development platforms (java, nodejs, python, php), databases (mysql, redis, elasticsearch, et al), etc.
+Deliverables
+Clean SAST and SCA reports (critical/high findings remediated).
+Secure code commits without hardcoded secrets.
+Code review documentation with security checks.
+Integrated logging and error handling.
+Phase 4: Testing & Quality Assurance
+** DEFINE **
+
+Security Activities
+Dynamic Application Security Testing (DAST): Integrate DAST tools into the CI/CD pipeline, running against deployed applications (e.g., in staging or pre-production environments). Configure DAST to crawl and test for common web application vulnerabilities.
+Penetration Testing: Conduct independent penetration tests by a qualified internal or external team. Scope the pen test based on the application's criticality and data sensitivity. Address all findings within agreed-upon SLAs.
+Security QA Testing: QA teams should incorporate security test cases into their regular testing cycles, including authentication bypass, authorization checks, input validation, and negative testing.
+Container Image Scanning (Pre-Deployment): Scan container images in Artifactory (or equivalent) for known vulnerabilities before deployment. Block deployment of vulnerable images.
+Configuration Review: Review application and infrastructure configurations for security best practices (e.g., default credentials, unnecessary services, open ports).
+Security Controls
+DAST testing should be performed prior to each release.
+Penetration testing must be completed in accordance with the Application Security Testing Standard.
+Deliverables
+DAST and IAST scan reports (critical/high findings remediated).
+Penetration test reports and remediation plans.
+Security test cases and results from QA.
+Clean container image scan reports.
+Configuration review findings.
+Phase 5: Deployment & Operations
+Security Activities:
+Secure CI/CD Pipelines:
+Pipeline Security: Secure CI/CD platforms themselves (e.g., access control, secrets management for pipeline credentials).
+Immutable Infrastructure: Promote immutable infrastructure principles, where deployments create new instances rather than modifying existing ones.
+Automated Security Gates: Implement automated security gates in CI/CD pipelines (e.g., block deployment if SAST/SCA/DAST critical findings exist, if PII is detected in logs, if infrastructure as code scans fail).
+Artifact Integrity Verification: Ensure artifacts stored in Artifactory are signed and verified before deployment to prevent tampering.
+Least Privilege for Deployment Accounts: Grant deployment accounts only the minimum necessary permissions.
+Audit Trails: Maintain comprehensive audit trails of all deployments.
+Infrastructure as Code (IaC) Security Scanning: Scan IaC templates (Terraform, CloudFormation, Ansible) for security misconfigurations before deployment.
+Runtime Protection (WAF/RASP): Deploy Web Application Firewalls (WAFs) or Runtime Application Self-Protection (RASP) solutions for critical applications to provide an additional layer of defense.
+Security Monitoring & Logging: Implement robust security monitoring and centralized logging (SIEM) for application security events. Define alerts for suspicious activities.
+Incident Response Plan Integration: Ensure applications are integrated into the company's overall incident response plan.
+Secure Configuration Management: Enforce secure configuration baselines for all deployed components (OS, middleware, application servers).
+Vulnerability Management Program: Integrate deployed applications into the company's ongoing vulnerability management program, including regular scanning and patching.
+Security Controls:
+Development teams should use "hosted" continuous integration platforms to build software into artifacts.
+Do not allow code from unprotected branches to be run in the CI pipeline.  This guards against unreviewed changes from being executed in a privileged context.
+SLSA attestations should be produced, providing a verifiable link between an artifact and its inputs (source code, dependencies, build environment).
+Artifacts produced by CI/CD systems may be signed.
+Artifacts, along with metadata and attestations, should be reposed in an artifact management server (eg, Artifactory).  Access to these artifacts and associated data should be restricted from both access and modification.
+Deliverables:
+Secure CI/CD pipeline configurations.
+IaC security scan reports.
+WAF/RASP configurations.
+Integrated security monitoring and logging.
+Defined incident response procedures for the application.
+Phase 6: Monitoring & Maintenance
+Security Activities
+ Continuous Security Monitoring: Continuously monitor application logs, security events, and infrastructure for anomalies and potential attacks.
+ Vulnerability Management: Regularly scan deployed applications for new vulnerabilities (e.g., using external vulnerability scanners). Patch promptly.
+ Patch Management: Implement a robust patch management process for application dependencies, operating systems, and middleware.
+ Regular Security Reviews: Conduct periodic security reviews of applications in production to ensure continued adherence to security standards.
+ Threat Intelligence Integration: Integrate relevant threat intelligence feeds to proactively identify new threats and vulnerabilities.
+ Decommissioning Security: When an application is decommissioned, ensure all sensitive data is securely wiped or archived, and access is revoked.
+Security Controls
+Application logs must be exported to a SEIM solution.
+Application platforms (virtual machines, container orchestration platforms) must have required monitoring agents installed.
+Deliverables
+ Security monitoring reports.
+  Vulnerability scan reports and remediation status.
+  Patching reports.
+  Security review findings.
+  Decommissioning security checklist.
+Training & Awareness
+Mandatory Secure Coding Training: All developers, QA engineers, and DevOps personnel involved in software development must complete annual secure coding training.
+
+Role-Based Security Training: Provide specialized security training for architects, product owners, and AppSec champions.
+
+Phishing & Social Engineering Awareness: Regular training and simulated phishing exercises for all employees.
+
+Security Champions Program: Establish and empower security champions within development teams to disseminate security knowledge and best practices.
+
+Compliance and Governance
+Regular Audits: Conduct periodic internal and external audits to ensure adherence to this standard and relevant regulatory requirements (e.g., PCI DSS, ISO 27001, SOC 2).
+
+Policy Review: This standard shall be reviewed and updated annually, or as necessitated by changes in technology, threats, or regulatory landscape.
+
+Exception Process: Any deviations from this standard must be formally documented, justified, risk-assessed, and approved by the AppSec Team and relevant stakeholders.
+
+Appendices
+Secure Coding Guidelines Checklist (Language-agnostic)
+Secrets management.
+Threat Modeling Guide and Templates
+Security Test Case Examples
+CI/CD Pipeline Security Standard
+SCM Security Standard
+Approved Third-Party Security Tools List
